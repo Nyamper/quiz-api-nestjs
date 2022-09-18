@@ -15,8 +15,7 @@ const { MONGO_URI } = process.env;
     QuizModule,
     UserModule,
     JwtModule.register({
-      secret: 'secret',
-      // secret: process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
   ],
