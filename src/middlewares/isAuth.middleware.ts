@@ -1,32 +1,34 @@
 import { NextFunction, Request, Response } from 'express';
 import { AuthService } from '../auth/auth.service';
 import jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 import {
   Injectable,
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
 
-declare module 'jsonwebtoken' {
-  export interface UserIDJwtPayload extends jwt.JwtPayload {
-    userId: string;
-  }
+interface UserIDJwtPayload extends jwt.JwtPayload {
+  id: string;
 }
 
 @Injectable()
 export class IsAuthMiddleware implements NestMiddleware {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly jwtService: JwtService,
+  ) {}
   async use(req: Request, res: Response, next: NextFunction) {
     if (!req.context?.token) {
       throw new UnauthorizedException('token is not provided');
     }
-    try {
-      const decodedToken = jwt.verify(
-        req.context.token,
-        process.env.JWT_SECRET,
-      ) as jwt.UserIDJwtPayload;
 
-      const user = await this.authService.findUserById(decodedToken.userId);
+    try {
+      const decodedToken = this.jwtService.verify(
+        req.context.token,
+      ) as UserIDJwtPayload;
+
+      const user = await this.authService.findUserById(decodedToken.id);
 
       if (!user) {
         throw new UnauthorizedException();
@@ -47,38 +49,3 @@ export class IsAuthMiddleware implements NestMiddleware {
     }
   }
 }
-
-// async function isAuthMiddleware(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) {
-//   if (!req.context?.token) {
-//     return res.status(401).send({ auth: false, message: 'No token provided.' });
-//   }
-
-//   try {
-//     const service = new AuthService();
-//     const decodedToken = <jwt.UserIDJwtPayload>(
-//       service.verifyToken(req.context.token)
-//     );
-//     const user = await service.findUserById(decodedToken.id);
-//     if (!user) {
-//       return res.status(401).send({ auth: false, message: 'User not found.' });
-//     }
-//     if (user.token !== req.context.token) {
-//       return res.status(401).send({ auth: false, message: 'Invalid token.' });
-//     }
-//     req.context = {
-//       ...req.context,
-//       user,
-//     };
-//     next();
-//   } catch (error) {
-//     return res
-//       .status(401)
-//       .send({ auth: false, message: 'Failed to authenticate token.' });
-//   }
-// }
-
-// export default isAuthMiddleware;
