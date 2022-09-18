@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  basic_node:
+    restart: always
+    build: .
+    ports:
+      - '80:4000'
+    volumes:
+      - ./src:/app/src
+    env_file: .env
+  quiz_mongo:
+    image: 'mongo:4.4.6'
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=quiz
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - quiz_mongodb:/data/db
+volumes:
+  quiz_mongodb:
