@@ -13,22 +13,28 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async login({ name, password }: UserDto) {
+  public async login({ username, password }: UserDto) {
     try {
-      const user = await this.findUserByName(name);
+      const user = await this.findUserByName(username);
+
       if (!user) {
         throw new Error('User does not exist');
       }
+
       const isPasswordValid = await this.comparePassword(
         password,
         user.password,
       );
+
       if (!isPasswordValid) {
         throw new Error('Password is invalid');
       }
+
       const token = await this.generateToken(user);
       user.token = token;
+      console.log('1');
       await user.save();
+      console.log('2');
       return token;
     } catch (error) {
       throw new Error(error);
@@ -61,9 +67,9 @@ export class AuthService {
     }
   }
 
-  private async findUserByName(name: string) {
+  private async findUserByName(username: string) {
     try {
-      return await this.userModel.findOne({ name });
+      return await this.userModel.findOne({ username });
     } catch (error) {
       throw new Error(error);
     }

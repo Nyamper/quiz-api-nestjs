@@ -11,7 +11,7 @@ export class UserController {
     try {
       return this.userService.createUser(userDto);
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 }

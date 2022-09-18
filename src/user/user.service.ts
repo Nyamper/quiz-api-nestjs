@@ -12,15 +12,15 @@ export class UserService {
     private readonly userModel: Model<User>,
   ) {}
 
-  public async createUser({ name, password }: UserDto) {
+  public async createUser({ username, password }: UserDto) {
     try {
-      const existingUser = await this.findUserByName(name);
+      const existingUser = await this.findUserByName(username);
       if (existingUser) {
         throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
       }
       const hashedPassword = await this.hashPassword(password);
       const user = new this.userModel({
-        name,
+        username,
         password: hashedPassword,
       });
       return await user.save();
@@ -29,9 +29,10 @@ export class UserService {
     }
   }
 
-  private async findUserByName(name: string) {
+  private async findUserByName(username: string) {
     try {
-      return await this.userModel.findOne({ name });
+      console.log('username', username);
+      return await this.userModel.findOne({ username });
     } catch (error) {
       throw new Error(error);
     }
