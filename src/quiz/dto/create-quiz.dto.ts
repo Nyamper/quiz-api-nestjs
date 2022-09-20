@@ -1,4 +1,5 @@
 class Question {
+  // readonly _id: string;
   readonly question: string;
   readonly answers: string[];
   readonly correctAnswer: string;

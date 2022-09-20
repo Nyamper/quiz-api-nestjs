@@ -32,9 +32,7 @@ export class AuthService {
 
       const token = await this.generateToken(user);
       user.token = token;
-      console.log('1');
       await user.save();
-      console.log('2');
       return token;
     } catch (error) {
       throw new Error(error);

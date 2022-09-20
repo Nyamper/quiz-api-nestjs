@@ -33,13 +33,12 @@ export class QuizController {
     }
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
-  //   return this.quizService.update(+id, updateQuizDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.quizService.remove(+id);
-  // }
+  @Get('/answers/:id')
+  async getQuizCorrectAnswers(@Param('id') id: string) {
+    try {
+      return this.quizService.getQuizAnswers(id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

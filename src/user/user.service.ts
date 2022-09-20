@@ -31,7 +31,6 @@ export class UserService {
 
   private async findUserByName(username: string) {
     try {
-      console.log('username', username);
       return await this.userModel.findOne({ username });
     } catch (error) {
       throw new Error(error);
